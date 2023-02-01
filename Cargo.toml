@@ -1,0 +1,13 @@
+[package]
+name = "pot-diff"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+pot = { git = "https://github.com/khonsulabs/pot", branch = "main" }
+serde = "1.0.152"
+thiserror = "1.0.38"
+
+[patch.crates-io]
+pot = { path = "../pot/pot" }
