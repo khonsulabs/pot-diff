@@ -27,20 +27,20 @@ fn test<T: Serialize + for<'de> Deserialize<'de> + PartialEq + std::fmt::Debug>(
 #[test]
 fn basic_sequence_apply() {
     test(&vec![1], &vec![1], "");
-    test(&vec![1, 2], &vec![1, 2, 3], "[;+2;3]");
-    test(&vec![0, 1, 2, 3], &vec![2, 3], "[;-0;2]");
-    test(&vec![3, 4], &vec![1, 2, 3, 4], "[;+0;1+1;2]");
-    test(&vec![3, 4, 5], &vec![3, 4], "[;$2]");
+    test(&vec![1, 2], &vec![1, 2, 3], "[;+2;3");
+    test(&vec![0, 1, 2, 3], &vec![2, 3], "[;-0;2");
+    test(&vec![3, 4], &vec![1, 2, 3, 4], "[;+0;1+1;2");
+    test(&vec![3, 4, 5], &vec![3, 4], "[;$2");
 
     test(
         &vec![vec![1, 2], vec![2, 3, 4]],
         &vec![vec![1, 2, 3], vec![2, 3, 4]],
-        "[;[0;+2;3]]",
+        "[;[0;+2;3",
     );
     test(
         &vec![vec![1], vec![2, 3, 4]],
         &vec![vec![0], vec![2, 3, 4]],
-        "[;~0;[0]]",
+        "[;~0;[0]",
     );
 }
 
@@ -52,12 +52,12 @@ fn map_sequence_apply() {
             (Value::from(1), Value::from(2)),
             (Value::from(3), Value::from(4)),
         ])),
-        "{;+1;3;4}",
+        "{;+1;3;4",
     );
     test(
         &OwnedValue(Value::from_mappings([(Value::from(1), Value::from(2))])),
         &OwnedValue(Value::from_mappings([(Value::from(1), Value::from(3))])),
-        "{;~0;3}",
+        "{;~0;3",
     );
     test(
         &OwnedValue(Value::from_mappings([(
@@ -68,7 +68,7 @@ fn map_sequence_apply() {
             Value::from(1),
             Value::from_sequence([Value::from(2), Value::from(3)]),
         )])),
-        "{;[0;~0;2]}",
+        "{;[0;~0;2",
     );
     test(
         &OwnedValue(Value::from_mappings([
@@ -76,7 +76,7 @@ fn map_sequence_apply() {
             (Value::from(3), Value::from(4)),
         ])),
         &OwnedValue(Value::from_mappings([(Value::from(3), Value::from(4))])),
-        "{;-0;1}",
+        "{;-0;1",
     );
     test(
         &OwnedValue(Value::from_mappings([(Value::from(3), Value::from(4))])),
@@ -84,7 +84,7 @@ fn map_sequence_apply() {
             (Value::from(1), Value::from(2)),
             (Value::from(3), Value::from(4)),
         ])),
-        "{;+0;1;2}",
+        "{;+0;1;2",
     );
     test(
         &OwnedValue(Value::from_mappings([
@@ -92,7 +92,7 @@ fn map_sequence_apply() {
             (Value::from(3), Value::from(4)),
         ])),
         &OwnedValue(Value::from_mappings([(Value::from(1), Value::from(2))])),
-        "{;$1}",
+        "{;$1",
     );
     test(
         &OwnedValue(Value::from_mappings([
@@ -103,7 +103,7 @@ fn map_sequence_apply() {
             (Value::from(3), Value::from(4)),
             (Value::from(4), Value::from(5)),
         ])),
-        "{;~0;3;4}",
+        "{;~0;3;4",
     );
     test(
         &OwnedValue(Value::from_mappings([(Value::from(1), Value::from(2))])),
@@ -119,7 +119,7 @@ fn map_sequence_apply() {
             Value::from_sequence([Value::from(2), Value::from(3), Value::from(4)]),
             Value::from_sequence([Value::from(3), Value::from(4)]),
         )])),
-        "{;[@0;~0;2]}",
+        "{;[@0;~0;2",
     );
     test(
         &OwnedValue(Value::from_mappings([(
@@ -130,7 +130,7 @@ fn map_sequence_apply() {
             Value::from_sequence([Value::from(2)]),
             Value::from_sequence([Value::from(3), Value::from(4)]),
         )])),
-        "{;~@0;[2]}",
+        "{;~@0;[2]",
     );
 }
 

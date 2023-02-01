@@ -58,6 +58,11 @@ impl Diff {
             Self::create_diff(None, original, Cow::Owned(updated), false, &mut diff);
         }
 
+        // Remove trailing exits, they're unnecessary
+        while let Some(Change::Exit) = diff.changes.last() {
+            diff.changes.pop();
+        }
+
         diff
     }
 
