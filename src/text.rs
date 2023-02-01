@@ -261,4 +261,41 @@ pub enum DecodeError {
     MissingQuote,
     #[error("invalid escape sequence")]
     InvalidEscape,
+    // InvalidInteger(#[from] ParseIntError),
 }
+
+// pub fn parse(diff: &str) -> Result<Diff, DecodeError> {
+//     let mut chars = diff.chars().peekable();
+//     let mut diff = Diff {
+//         changes: Vec::new(),
+//     };
+
+//     while let Some(ch) = chars.next() {
+//         match ch {
+//             '[' => {}
+//             '{' => {}
+//             '~' => {}
+//             _ => todo!("error"),
+//         }
+//     }
+
+//     Ok(diff)
+// }
+
+// fn read_usize(
+//     chars: &mut Peekable<Chars<'_>>,
+//     scratch: &mut String,
+// ) -> Result<Option<usize>, DecodeError> {
+//     scratch.clear();
+//     while let Some(ch) = chars.peek() {
+//         if ('0'..='9').contains(&ch) {
+//             scratch.push(ch);
+//         }
+//     }
+
+//     if scratch.is_empty() {
+//         Ok(None)
+//     } else {
+//         scratch.parse().map_err(DecodeError::from)
+//     }
+// }

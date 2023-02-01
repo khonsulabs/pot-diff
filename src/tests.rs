@@ -15,6 +15,13 @@ fn test<T: Serialize + for<'de> Deserialize<'de> + PartialEq + std::fmt::Debug>(
 
     let applied = diff.apply(original).unwrap();
     assert_eq!(&applied, updated);
+
+    let mut encoded = Vec::new();
+    crate::binary::encode(&diff, &mut encoded).unwrap();
+    println!("Encoded to {} bytes: {:?}", encoded.len(), encoded);
+    let decoded = crate::binary::decode(&encoded).unwrap();
+    let applied = decoded.apply(original).unwrap();
+    assert_eq!(&applied, updated);
 }
 
 #[test]
@@ -147,8 +154,8 @@ fn root_operations() {
     );
     test(
         &OwnedValue(Value::from(b"hello")),
-        &OwnedValue(Value::from(b"world")),
-        "~;#|world",
+        &OwnedValue(Value::from(b"worl\xdd")),
+        "~;#|worl|dd",
     );
     test(
         &OwnedValue(Value::from("hello")),

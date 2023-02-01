@@ -8,6 +8,10 @@ edition = "2021"
 pot = { git = "https://github.com/khonsulabs/pot", branch = "main" }
 serde = "1.0.152"
 thiserror = "1.0.38"
+ordered-varint = "2.0.0"
 
-[patch.crates-io]
-pot = { path = "../pot/pot" }
+[dev-dependencies]
+serde = { version = "1.0.152", features = ["derive"] }
+
+# [patch."https://github.com/khonsulabs/pot"]
+# pot = { path = "../pot/pot" }

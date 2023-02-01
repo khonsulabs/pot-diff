@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::collections::{vec_deque, VecDeque};
 use std::fmt::{Display, Write as _};
 use std::iter::{self, Cloned};
+use std::ops::{Deref, DerefMut};
 use std::slice;
 
 use pot::format::{Float, Integer};
@@ -11,14 +12,25 @@ use serde::Serialize;
 
 use crate::text::ValueDisplay;
 
+mod binary;
 mod text;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Diff {
     changes: Vec<Change>,
 }
 
 impl Diff {
+    pub fn serialize(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        binary::encode(self, &mut bytes).expect("infallible");
+        bytes
+    }
+
+    pub fn deserialize(bytes: &[u8]) -> Result<Self, binary::DecodeError> {
+        binary::decode(bytes)
+    }
+
     pub fn between<T: Serialize>(original: &T, updated: &T) -> Self {
         let original = Value::from_serialize(original);
         let updated = Value::from_serialize(updated);
@@ -634,7 +646,7 @@ pub enum Error {
     ValueDeserialization(#[from] pot::ValueError),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Change {
     EnterSequence {
         index: Option<usize>,
@@ -868,6 +880,60 @@ where
             CowDeque::Owned(queue) => queue.iter().skip(0),
             CowDeque::Borrowed { deque, index } => deque.iter().skip(*index),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct Diffable<T> {
+    active: T,
+    dirty: bool,
+    latest: Value<'static>,
+}
+
+impl<T> Diffable<T>
+where
+    T: Serialize + DeserializeOwned,
+{
+    pub fn new(value: T) -> Self {
+        let latest = Value::from_serialize(&value);
+        Self {
+            latest,
+            active: value,
+            dirty: false,
+        }
+    }
+
+    pub fn diff(&mut self) -> Option<Diff> {
+        if self.dirty {
+            self.dirty = false;
+            // TODO make a Value method to recycle buffers yet reload from a Serialize.
+            let updated = Value::from_serialize(&self.active);
+            // TODO this shouldn't be a clone.
+            let diff = Diff::between_values(&self.latest, updated.clone());
+            self.latest = updated;
+            if diff.changes.is_empty() {
+                None
+            } else {
+                Some(diff)
+            }
+        } else {
+            None
+        }
+    }
+}
+
+impl<T> Deref for Diffable<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.active
+    }
+}
+
+impl<T> DerefMut for Diffable<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.dirty = true;
+        &mut self.active
     }
 }
 
